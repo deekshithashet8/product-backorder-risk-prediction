@@ -1,6 +1,6 @@
-
 import streamlit as st
 import joblib
+import zipfile
 import pandas as pd
 import numpy as np
 from pathlib import Path
@@ -42,9 +42,14 @@ APP_DIR = Path(__file__).parent
 
 @st.cache_resource
 def load_model():
-    model = joblib.load(
-        APP_DIR / "backorder_random_forest.pkl"
-    )
+    model_path = APP_DIR / "backorder_random_forest.pkl"
+    zip_path = APP_DIR / "backorder_random_forest.zip"
+
+    if not model_path.exists():
+        with zipfile.ZipFile(zip_path, "r") as zip_ref:
+            zip_ref.extract("backorder_random_forest.pkl", APP_DIR)
+
+    model = joblib.load(model_path)
 
     info = joblib.load(
         APP_DIR / "backorder_preprocessing.pkl"
@@ -362,3 +367,6 @@ if submitted:
         "The probability is a model estimate, not a guarantee "
         "of the actual product outcome."
     )
+
+
+it is backorder_random_forest.zip
